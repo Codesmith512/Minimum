@@ -1,0 +1,4 @@
+LGE.txt
+
+- Reads two numbers from the user, then prints LGE if the first is Less, Greater, Equal
+- Loops infinitely
