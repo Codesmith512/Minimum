@@ -17,7 +17,10 @@ Should also be entirely cross-platform with the STL, however this has not been t
 === Installation ===
 ====================
 
-Corresponding binaries are in Debug/ and Release/, and are entirely stand-alone
+Debugging and release binaries are located in bin/ in their respective folders
+The debugging will automatically dump the instruction pointer, heap, and stack (if enabled) on program exit
+
+Example programs can be found in examples/ , but must be renamed to 'input.txt' before running
 
 
 ====================
