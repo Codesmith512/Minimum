@@ -2,10 +2,10 @@
 
 Minimum is a compiler that supports the Minimal-2D language with a few additional extensions
 
-Corresponding binaries are in Debug/ and Release/, and are entirely stand-alone
+Debugging and release binaries are located in `bin/` in their respective folders
 
-Sources are located in Minimal-2D.
-The only source file atm is 'Minimal-2D.cpp', the rest are standard vs.
+Sources are located in `src/`.
+The only source file atm is `Minimal-2D.cpp`, the rest are standard vs.
 
 Builds without warnings or errors with VS15, and shouldn't require any additional prerequsites.
 Should also be entirely cross-platform with the STL, however this has not been tested.
@@ -13,10 +13,10 @@ Should also be entirely cross-platform with the STL, however this has not been t
 
 #Installation
 
-Debugging and release binaries are located in bin/ in their respective folders
+Debugging and release binaries are located in `bin/` in their respective folders
 The debugging will automatically dump the instruction pointer, heap, and stack (if enabled) on program exit
 
-Example programs can be found in examples/ , but must be renamed to 'input.txt' before running
+Example programs can be found in `examples/` , but must be renamed to `input.txt` before running
 
 
 #How to Use
@@ -24,7 +24,7 @@ Example programs can be found in examples/ , but must be renamed to 'input.txt' 
 Build flags are located in `Minimal-2D.cpp`, at the top beneath the command dictionary.
 The default build has all flags enabled.
 
-The program takes an 'input.txt' in the same folder and runs it.
+The program takes an `input.txt` in the same folder and runs it.
 I/O takes place in the same console window.
 
 After execution, the program will pause and give an instructions count.
