@@ -59,7 +59,7 @@ Follows standard LIFO procedures for a stack
 ##Minimum-2D
 ```
 > | Increment the data pointer
-< | Decrement the data pointer (does not allow overflow)
+< | Decrement the data pointer
 + | Increment the value at the data pointer
 - | Decrement the value at the data pointer
 . | Output the value at the data pointer in ASCII
@@ -69,7 +69,7 @@ U | Tells the parser to process instructions up
 D | Tells the parser to process instructions down
 L | Tells the parser to process instructions left
 R | Tells the parser to process instructions right
-  | Any unused characters count as NOP (NO oPeration) operations (counts as an operation, but does not count towards count)
+  | Any unused characters count as NOP (NO oPeration) operations (does not factor into instruction count)
 ```
  
  
