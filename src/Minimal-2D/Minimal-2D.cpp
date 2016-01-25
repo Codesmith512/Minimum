@@ -198,8 +198,8 @@ int main()
         break;
 
       case ']':
-        _stack.pop();
         _heap.ptr = _stack.peek();
+        _stack.pop();
         break;
 
 #endif

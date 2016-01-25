@@ -12,7 +12,7 @@ struct STACK
   /* Default Constructor */
   STACK()
     :data(),
-    ptr(0)
+    ptr(static_cast<PTR_SIZE>(-1))
   {
 
   }
@@ -40,7 +40,7 @@ struct STACK
   {
     while(ptr >= data.size())
       data.resize(data.size() + MEM_CHUNK);
-    data[ptr++] = val;
+    data[++ptr] = val;
   }
 
   /* Dump Stack */
