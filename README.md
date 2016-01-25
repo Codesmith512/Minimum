@@ -84,14 +84,14 @@ R | Tells the parser to process instructions right
 V | Push the value at the data pointer onto the stack
 ^ | Pops the top value from the stack and throws it away (does nothing if no stack)
 ! | Copy the top value from the stack into the value at the data pointer (does nothing if no stack)
+[ | Pushes the data pointer onto the stack, and moves the value at the pointer into the pointer
+] | Pops the value from the stack into the data pointer
 ```
 
 ##General Extensions
 ```
 ) | Sets the value at the data pointer to zero
 ; | Terminates the program
-~ | Moves the value at the data pointer into the data pointer
-$ | Moves the value of the data pointer into the value at the data pointer
 & | Puts the current address into the data pointer (x at pointer, y at entry after) 
 ( | Jumps execution to the value at the data pointer (x at pointer, y at entry after)
 ```
