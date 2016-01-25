@@ -69,6 +69,7 @@ U | Tells the parser to process instructions up
 D | Tells the parser to process instructions down
 L | Tells the parser to process instructions left
 R | Tells the parser to process instructions right
+  | Any unused characters count as NOP (NO oPeration) operations (counts as an operation, but does not count towards count)
 ```
  
  
