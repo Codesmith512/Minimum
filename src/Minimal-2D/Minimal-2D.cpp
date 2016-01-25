@@ -36,9 +36,12 @@
  *   Enables stack based features
  *   Enables the following stack commands
  *
- *     V | Push the value at the data pointer onto the stack
- *     ^ | Pops the top value from the stack and throws it away (does nothing if no stack)
- *     ! | Copy the top value from the stack into the value at the data pointer (does nothing if no stack)
+ *     V | Pushes (copies) the value at the data pointer onto the stack, increments stack pointer
+ *     ^ | Removes the top element from the stack, decrements stack pointer
+ *     ! | Copies the value currently on the stack into the value at the data pointer
+ *     [ | Pushes the data pointer onto the stack, and moves the value at the pointer into the pointer
+ *     ] | Pops the value from the stack into the data pointer
+ *     
  *
  * _ENABLE_EXTENSIONS
  *   Enables some generic language extensions
@@ -46,8 +49,6 @@
  *
  *     ) | Sets the value at the data pointer to zero
  *     ; | Terminates the program
- *     ~ | Moves the value at the data pointer into the data pointer
- *     $ | Moves the value of the data pointer into the value at the data pointer
  *     & | Puts the current address into the data pointer (x at pointer, y at entry after) 
  *     ( | Jumps execution to the value at the data pointer (x at pointer, y at entry after)
  *
@@ -55,6 +56,18 @@
 #define _ENABLE_DEBUGGING 1
 #define _ENABLE_STACK 1
 #define _ENABLE_EXTENSIONS 1
+
+/* Compiler Properties */
+#define PTR_SIZE unsigned char
+#define MEM_CHUNK 64
+
+/* Project */
+#include "Heap.h"
+#include "iPtr.h"
+
+#if _ENABLE_STACK
+#include "Stack.h"
+#endif
 
 /* STL */
 #include <fstream>
@@ -65,143 +78,10 @@
 #include <stdio.h>
 #include <vector>
 
-/* Compiler Properties */
-#define PTR_SIZE unsigned char
-#define TAPE_CHUNK 100
 
 /* Instructions to Parse */
 std::vector<std::vector<char> > instructions;
 size_t iCount = 0;
-
-/* Instruction Coordinates */
-struct IP
-{
-  IP(PTR_SIZE _x, PTR_SIZE _y)
-    :x(_x),
-     y(_y)
-  {
-
-  }
-
-  PTR_SIZE x;
-  PTR_SIZE y;
-} _ip(0, 0);
-
-/* Direction of New Instruction */
-enum class IP_DIR : std::uint8_t
-{
-  RIGHT = 1,  // 001
-  DOWN  = 2,  // 010
-  LEFT  = 5,  // 101
-  UP    = 6,  // 110
-
-  HORIZONTAL = 1, // 001
-  VERTICAL = 2    // 010
-} _ip_dir = IP_DIR::RIGHT;
-inline bool operator&(const IP_DIR& a, const IP_DIR& b)
-{ return static_cast<bool>((static_cast<uint8_t>(a) & static_cast<uint8_t>(b)) != 0); }
-
-/* Heap Memory */
-std::vector<PTR_SIZE> heap;
-PTR_SIZE ptr = 0;
-
-/* Stack Memory */
-#if _ENABLE_STACK
-std::vector<PTR_SIZE> stack;
-#endif
-
-/*
- * Tape Access
- */
-unsigned char& getHeapValue()
-{
-  /* Ensure Bounds */
-  while(ptr >= heap.size())
-  {
-    heap.resize(heap.size() + TAPE_CHUNK);
-    for(size_t i = heap.size() - TAPE_CHUNK; i < heap.size(); i++)
-      heap[i] = 0;
-  }
-
-  /* Return Value */
-  return heap[ptr];
-}
-
-/*
- * Updates the IP
- */
-void updateIP()
-{
-  switch(_ip_dir)
-  {
-  case IP_DIR::RIGHT:
-    _ip.x++;
-    break;
-
-  case IP_DIR::DOWN:
-    _ip.y++;
-    break;
-
-  case IP_DIR::LEFT:
-    _ip.x--;
-    break;
-
-  case IP_DIR::UP:
-    _ip.y--;
-  }
-}
-
-/*
- * Dumps the contents of the instruction pointer to the screen
- */
-#if _ENABLE_DEBUGGING
-void ipDump()
-{
-  printf("\n\nInstruction (%03u, %03u)\n\n", _ip.x, _ip.y);
-}
-#endif
-
-/*
- * Dumps the contents of the heap to the screen
- */
-#if _ENABLE_DEBUGGING
-void heapDump()
-{
-  std::cout << "\n\nProgram Heap Dump (uint8_t)";
-  for(size_t i = 0; i < heap.size(); i++)
-  {
-    if(i % 0x10 == 0) printf("\n0x%x\t| ", i);
-    printf(" %03i", heap[i]);
-  }
-  printf("\nPtr: 0x%02x [%03i]", ptr, getHeapValue());
-  std::cout << "\n\n";
-  std::getc(stdin);
-
-  std::cout << "\n\nProgram Heap Dump (char)";
-  for(size_t i = 0; i < heap.size(); i++)
-  {
-    if(i % 0x10 == 0) printf("\n0x%x\t| ", i);
-    printf("%c ", heap[i]);
-  }
-  printf("\nPtr: 0x%02x [%c]", ptr, getHeapValue());
-  std::cout << "\n\n";
-  std::getc(stdin);
-}
-#endif
-
-/**
- * Dumps the contents of the stack to the screen
- */
-#if _ENABLE_DEBUGGING && _ENABLE_STACK
-void stackDump()
-{
-  std::cout << "\n\nProgram Stack Dump (uint8_t)|(char)\n::TOP::\n";
-  for(size_t i = stack.size() - 1; i < stack.size(); i--)
-    printf("%4i | %c\n", stack[i], stack[i]);
-  std::cout << "::BOT::\n\n";
-  std::getc(stdin);
-}
-#endif
 
 /**
  * Entry Point
@@ -232,7 +112,7 @@ int main()
 
   /* Process Loop */
   bool exit = false;
-  while(!exit && (_ip_dir & IP_DIR::VERTICAL ? _ip.y < instructions.size() : _ip.x < instructions[_ip.y].size()))
+  while(!exit && (_ip.dir & IP_DIR::VERTICAL ? _ip.y < instructions.size() : _ip.x < instructions[_ip.y].size()))
   {
     /*
      * Process Character
@@ -243,108 +123,109 @@ int main()
       {
         /* Standard Commands */
       case '<':
-        ptr--;
+        _heap.ptr--;
         break;
 
       case '>':
-        ptr++;
+        _heap.ptr++;
         break;
 
       case '+':
-        getHeapValue()++;
+        _heap.value()++;
         break;
 
       case '-':
-        getHeapValue()--;
+        _heap.value()--;
         break;
 
       case '.':
-        std::cout << getHeapValue();
+        std::cout << _heap.value();
         break;
 
       case ',':
-        std::cin >> getHeapValue();
+        std::cin >> _heap.value();
         break;
 
       case '/':
-        if(!getHeapValue()) updateIP();
+        if(!_heap.value()) _ip.update();
         break;
 
       case 'U':
-        _ip_dir = IP_DIR::UP;
+        _ip.dir = IP_DIR::UP;
         break;
 
       case 'D':
-        _ip_dir = IP_DIR::DOWN;
+        _ip.dir = IP_DIR::DOWN;
         break;
 
       case 'L':
-        _ip_dir = IP_DIR::LEFT;
+        _ip.dir = IP_DIR::LEFT;
         break;
 
       case 'R':
-        _ip_dir = IP_DIR::RIGHT;
+        _ip.dir = IP_DIR::RIGHT;
         break;
 
         /* Debug Commands */
 #if _ENABLE_DEBUGGING
       case '#':
-        heapDump();
+        _heap.dump();
         break;
 #endif
         /* Debug and Stack Commands */
 #if _ENABLE_DEBUGGING && _ENABLE_STACK
       case '@':
-        stackDump();
+        _stack.dump();
         break;
 #endif
         /* Stack Commands */
 #if _ENABLE_STACK
       case 'V':
-        stack.push_back(getHeapValue());
+        _stack.push(_heap.value());
         break;
 
       case '^':
-        if(stack.size())
-          stack.pop_back();
+        _stack.pop();
         break;
 
       case '!':
-        if(stack.size())
-          getHeapValue() = stack.back();
+        _heap.value() = _stack.peek();
         break;
+
+      case '[':
+        _stack.push(_heap.ptr);
+        _heap.ptr = _heap.value();
+        break;
+
+      case ']':
+        _stack.pop();
+        _heap.ptr = _stack.peek();
+        break;
+
 #endif
 
         /* Extended Commands */
 #if _ENABLE_EXTENSIONS
       case ')':
-        getHeapValue() = 0;
+        _heap.value() = 0;
         break;
 
       case ';':
         exit = true;
         break;
 
-      case '~':
-        ptr = getHeapValue();
-        break;
-
-      case '$':
-        getHeapValue() = ptr;
-        break;
-
       case '&':
-        getHeapValue() = _ip.x;
-        ptr++;
-        getHeapValue() = _ip.y;
-        ptr--;
+        _heap.value() = _ip.x;
+        _heap.ptr++;
+        _heap.value() = _ip.y;
+        _heap.ptr--;
         break;
 
       case '(':
-        _ip.x = getHeapValue();
-        ptr++;
-        _ip.y = getHeapValue();
-        ptr--;
+        _ip.x = _heap.value();
+        _heap.ptr++;
+        _ip.y = _heap.value();
+        _heap.ptr--;
         break;
 #endif
       default:
@@ -358,16 +239,16 @@ int main()
     /*
      * Update Instruction Pointer
      */
-    updateIP();
+    _ip.update();
   }
 
 #if defined _DEBUG
-  ipDump();
-  heapDump();
+  _ip.dump();
+  _heap.dump();
 #endif
 
 #if defined _DEBUG && _ENABLE_STACK
-  stackDump();
+  _stack.dump();
 #endif
 
   printf("\n\nProgram Execution Complete.\n%03u Instructions Processed.\n", iCount);
