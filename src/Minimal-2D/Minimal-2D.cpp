@@ -23,6 +23,7 @@
  *     D | Tells the parser to process instructions down
  *     L | Tells the parser to process instructions left
  *     R | Tells the parser to process instructions right
+ *       | Any unused characters count as NOP (NO oPeration) operations (does not factor into instruction count)
  *
  * _ENABLE_DEBUGGING
  *   Enables several debugging features
@@ -241,11 +242,11 @@ int main()
       {
         /* Standard Commands */
       case '<':
-        if(ptr - 1 < ptr) ptr--;
+        ptr--;
         break;
 
       case '>':
-        if(ptr + 1 > ptr) ptr++;
+        ptr++;
         break;
 
       case '+':
