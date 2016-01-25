@@ -1,6 +1,5 @@
-====================
-=== General Info ===
-====================
+General Info
+===
 
 Minimum is a compiler that supports the Minimal-2D language with a few additional extensions
 
@@ -13,9 +12,8 @@ Builds without warnings or errors with VS15, and shouldn't require any additiona
 Should also be entirely cross-platform with the STL, however this has not been tested.
 
 
-====================
-=== Installation ===
-====================
+Installation
+===
 
 Debugging and release binaries are located in bin/ in their respective folders
 The debugging will automatically dump the instruction pointer, heap, and stack (if enabled) on program exit
@@ -23,9 +21,8 @@ The debugging will automatically dump the instruction pointer, heap, and stack (
 Example programs can be found in examples/ , but must be renamed to 'input.txt' before running
 
 
-====================
-===  How to Use  ===
-====================
+How to Use
+===
 
 Build flags are located in `Minimal-2D.cpp`, at the top beneath the command dictionary.
 The default build has all flags enabled.
@@ -36,19 +33,16 @@ I/O takes place in the same console window.
 After execution, the program will pause and give an instructions count.
 
 
-====================
-===   Language   ===
-====================
+Language
+===
 
--------------
-- Execution -
--------------
+Execution
+---
 Execution always starts with the upper-left-most character, executing to the right
 Operations can be found in the below section
 
--------------
--  Memory   -
--------------
+Memory
+---
 All memory is the same size and is unsigned. (default to 1B)
 All memory wraps around. (BE CAREFUL, THE POINTER DOES WRAP)
 
@@ -66,9 +60,8 @@ It is of an infinite size (limited by the architecture of the machine)
 Follows standard LIFO procedures for a stack
 
 
-====================
-===  Operations  ===
-====================
+Operations
+===
 
 = Minimum-2D
 > | Increment the data pointer
@@ -101,7 +94,6 @@ V | Push the value at the data pointer onto the stack
 ( | Jumps execution to the value at the data pointer (x at pointer, y at entry after)
 
 
-====================
-=== Useful Links ===
-====================
+Useful Links
+===
 https://esolangs.org/wiki/Minimal-2D
