@@ -47,6 +47,7 @@
  *     ) | Sets the value at the data pointer to zero
  *     ; | Terminates the program
  *     ~ | Moves the value at the data pointer into the data pointer
+ *     $ | Moves the value of the data pointer into the value at the data pointer
  *     & | Puts the current address into the data pointer (x at pointer, y at entry after) 
  *     ( | Jumps execution to the value at the data pointer (x at pointer, y at entry after)
  *
@@ -326,6 +327,10 @@ int main()
 
       case '~':
         ptr = getHeapValue();
+        break;
+
+      case '$':
+        getHeapValue() = ptr;
         break;
 
       case '&':

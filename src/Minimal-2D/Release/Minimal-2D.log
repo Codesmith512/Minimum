@@ -1,7 +1,8 @@
-﻿  Minimal-2D.cpp
+﻿  stdafx.cpp
+  Minimal-2D.cpp
   Generating code
-  1 of 399 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    14 functions had inline decision re-evaluated but remain unchanged
+  394 of 399 functions (98.7%) were compiled, the rest were copied from previous compilation.
+    7 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  Minimal-2D.vcxproj -> c:\users\jwargo\documents\visual studio 2015\Projects\Minimal-2D\Release\Minimal-2D.exe
+  Minimal-2D.vcxproj -> C:\Projects\Minimum\src\Release\Minimal-2D.exe
