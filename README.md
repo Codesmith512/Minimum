@@ -37,14 +37,14 @@ Execution always starts with the upper-left-most character, executing to the rig
 Operations can be found in the below section
 
 ##Memory
-All memory is the same size and is unsigned. (default to 1B)
+All memory is the same size and is unsigned (defaults to 1B).
 All memory wraps around. (BE CAREFUL, THE POINTER DOES WRAP)
 
 ###The Heap
-The main memory in use is the 'heap' (usually referred to as the 'tape')
-The entire heap starts filled with zeros
+The main memory in use is the 'heap' (usually referred to as the 'tape').
+The entire heap starts filled with zeros.
 The program has access to a single pointer that starts pointing at address 0.
-The heap is created in chunks, but has a limit of whatever the highest addressable address is
+The heap is created in chunks, but has a limit of whatever the highest addressable address is.
  * These chunks are managed by the interpreter, and don't exist from the program's standpoint
  * If you debug and get no memory dumps, no memory has been created or used yet
  
@@ -57,6 +57,7 @@ Follows standard LIFO procedures for a stack
 #Operations
 
 ##Minimum-2D
+```
 > | Increment the data pointer
 < | Decrement the data pointer (does not allow overflow)
 + | Increment the value at the data pointer
@@ -68,23 +69,30 @@ U | Tells the parser to process instructions up
 D | Tells the parser to process instructions down
 L | Tells the parser to process instructions left
 R | Tells the parser to process instructions right
+```
  
  
 ##Debugging
-\# | Dumps the heap and pauses
-\@ | Dumps the stack and pauses (only works if stack is also enabled)
+```
+# | Dumps the heap and pauses
+@ | Dumps the stack and pauses (only works if stack is also enabled)
+```
  
 ##Stack
+```
 V | Push the value at the data pointer onto the stack
 ^ | Pops the top value from the stack and throws it away (does nothing if no stack)
 ! | Copy the top value from the stack into the value at the data pointer (does nothing if no stack)
+```
 
 ##General Extensions
+```
 ) | Sets the value at the data pointer to zero
 ; | Terminates the program
 ~ | Moves the value at the data pointer into the data pointer
 & | Puts the current address into the data pointer (x at pointer, y at entry after) 
 ( | Jumps execution to the value at the data pointer (x at pointer, y at entry after)
+```
 
 
 #Useful Links
