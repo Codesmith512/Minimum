@@ -83,6 +83,53 @@
 std::vector<std::vector<char> > instructions;
 size_t iCount = 0;
 
+/* Reserved Characters */
+char baseRC[] = {'<', '>', '+', '-', '.', ',', '/', 'U', 'D', 'L', 'R', '\0'};
+#if _ENABLE_DEBUGGING
+char debugRC[] = {'#', '@', '\0'};
+#endif
+#if _ENABLE_STACK
+char stackRC[] = {'V', '^', '!', '[', ']', '\0'};
+#endif
+#if _ENABLE_EXTENSIONS
+char extRC[] = { ')', ';', '&', '(', '\0' };
+#endif
+
+/*
+ * Searches for the Given Character
+ * Returns true if found reserved
+ */
+bool isReserved(const char& c)
+{
+  /* Search Base Reserved Characters */
+  for(char* rc = baseRC; *rc; rc++)
+    if(*rc == c)
+      return true;
+
+  /* Search Debugging Reserved Characters */
+#if _ENABLE_DEBUGGING
+  for(char* rc = debugRC; *rc; rc++)
+    if(*rc == c)
+      return true;
+#endif
+
+  /* Search Stack Reserved Characters */
+#if _ENABLE_STACK
+  for(char* rc = stackRC; *rc; rc++)
+    if(*rc == c)
+      return true;
+#endif
+
+  /* Search Debugging Reserved Characters */
+#if _ENABLE_DEBUGGING
+  for(char* rc = extRC; *rc; rc++)
+    if(*rc == c)
+      return true;
+#endif
+
+  return false;
+}
+
 /**
  * Entry Point
  */
@@ -112,133 +159,133 @@ int main()
 
   /* Process Loop */
   bool exit = false;
+  bool skip = false;
   while(!exit && (_ip.dir & IP_DIR::VERTICAL ? _ip.y < instructions.size() : _ip.x < instructions[_ip.y].size()))
   {
     /*
      * Process Character
      */
-    if(_ip.x < instructions[_ip.y].size())
+    if(_ip.x < instructions[_ip.y].size() && isReserved(instructions[_ip.y][_ip.x]))
     {
-      switch(instructions[_ip.y][_ip.x])
+      if(!skip)
       {
-        /* Standard Commands */
-      case '<':
-        _heap.ptr--;
-        break;
+        switch(instructions[_ip.y][_ip.x])
+        {
+          /* Standard Commands */
+        case '<':
+          _heap.ptr--;
+          break;
 
-      case '>':
-        _heap.ptr++;
-        break;
+        case '>':
+          _heap.ptr++;
+          break;
 
-      case '+':
-        _heap.value()++;
-        break;
+        case '+':
+          _heap.value()++;
+          break;
 
-      case '-':
-        _heap.value()--;
-        break;
+        case '-':
+          _heap.value()--;
+          break;
 
-      case '.':
-        std::cout << _heap.value();
-        break;
+        case '.':
+          std::cout << _heap.value();
+          break;
 
-      case ',':
-        std::cin >> _heap.value();
-        break;
+        case ',':
+          std::cin >> _heap.value();
+          break;
 
-      case '/':
-        if(!_heap.value()) _ip.update();
-        break;
+        case '/':
+          if(!_heap.value()) skip = true;
+          break;
 
-      case 'U':
-        _ip.dir = IP_DIR::UP;
-        break;
+        case 'U':
+          _ip.dir = IP_DIR::UP;
+          break;
 
-      case 'D':
-        _ip.dir = IP_DIR::DOWN;
-        break;
+        case 'D':
+          _ip.dir = IP_DIR::DOWN;
+          break;
 
-      case 'L':
-        _ip.dir = IP_DIR::LEFT;
-        break;
+        case 'L':
+          _ip.dir = IP_DIR::LEFT;
+          break;
 
-      case 'R':
-        _ip.dir = IP_DIR::RIGHT;
-        break;
+        case 'R':
+          _ip.dir = IP_DIR::RIGHT;
+          break;
 
-        /* Debug Commands */
+          /* Debug Commands */
 #if _ENABLE_DEBUGGING
-      case '#':
-        _heap.dump();
-        break;
+        case '#':
+          _heap.dump();
+          break;
 #endif
-        /* Debug and Stack Commands */
+          /* Debug and Stack Commands */
 #if _ENABLE_DEBUGGING && _ENABLE_STACK
-      case '@':
-        _stack.dump();
-        break;
+        case '@':
+          _stack.dump();
+          break;
 #endif
-        /* Stack Commands */
+          /* Stack Commands */
 #if _ENABLE_STACK
-      case 'V':
-        _stack.push(_heap.value());
-        break;
+        case 'V':
+          _stack.push(_heap.value());
+          break;
 
-      case '^':
-        _stack.pop();
-        break;
+        case '^':
+          _stack.pop();
+          break;
 
-      case '!':
-        _heap.value() = _stack.peek();
-        break;
+        case '!':
+          _heap.value() = _stack.peek();
+          break;
 
-      case '[':
-        _stack.push(_heap.ptr);
-        _heap.ptr = _heap.value();
-        break;
+        case '[':
+          _stack.push(_heap.ptr);
+          _heap.ptr = _heap.value();
+          break;
 
-      case ']':
-        _heap.ptr = _stack.peek();
-        _stack.pop();
-        break;
+        case ']':
+          _heap.ptr = _stack.peek();
+          _stack.pop();
+          break;
 
 #endif
 
-        /* Extended Commands */
+          /* Extended Commands */
 #if _ENABLE_EXTENSIONS
-      case ')':
-        _heap.value() = 0;
-        break;
+        case ')':
+          _heap.value() = 0;
+          break;
 
-      case ';':
-        exit = true;
-        break;
+        case ';':
+          exit = true;
+          break;
 
-      case '&':
-        _heap.value() = _ip.x;
-        _heap.ptr++;
-        _heap.value() = _ip.y;
-        _heap.ptr--;
-        break;
+        case '&':
+          _heap.value() = _ip.x;
+          _heap.ptr++;
+          _heap.value() = _ip.y;
+          _heap.ptr--;
+          break;
 
-      case '(':
-        _ip.x = _heap.value();
-        _heap.ptr++;
-        _ip.y = _heap.value();
-        _heap.ptr--;
-        break;
+        case '(':
+          _ip.x = _heap.value();
+          _heap.ptr++;
+          _ip.y = _heap.value();
+          _heap.ptr--;
+          break;
 #endif
-      default:
-        iCount--;
+        }
+        iCount++;
       }
-
-      /* Update Instruction Count */
-      iCount++;
+      else
+        skip = false;
     }
 
-    /*
-     * Update Instruction Pointer
-     */
+    /* Update Instruction Pointer */
     _ip.update();
   }
 
