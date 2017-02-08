@@ -12,13 +12,13 @@ struct STACK
   /* Default Constructor */
   STACK()
     :data(),
-    ptr(static_cast<PTR_SIZE>(-1))
+    ptr(static_cast<POINTER_T>(-1))
   {
 
   }
 
   /* Peek Operation */
-  PTR_SIZE peek()
+  CELL_T peek()
   {
     while(ptr >= data.size())
       data.resize(data.size() + MEM_CHUNK);
@@ -26,8 +26,8 @@ struct STACK
   }
 
   /* Data Members */
-  std::vector<PTR_SIZE> data;
-  PTR_SIZE ptr;
+  std::vector<CELL_T> data;
+  POINTER_T ptr;
 
   /* Pop Operation */
   void pop()
@@ -36,7 +36,7 @@ struct STACK
   }
 
   /* Push Operation */
-  void push(const PTR_SIZE& val)
+  void push(const CELL_T& val)
   {
     while(ptr >= data.size())
       data.resize(data.size() + MEM_CHUNK);

@@ -32,8 +32,8 @@ struct IP
   }
 
   /* Data Members */
-  PTR_SIZE x;
-  PTR_SIZE y;
+  POINTER_T x;
+  POINTER_T y;
   IP_DIR dir;
 
   /* Updates x and y */

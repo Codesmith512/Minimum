@@ -18,11 +18,11 @@ struct HEAP
   }
 
   /* Data Members */
-  std::vector<PTR_SIZE> data;
-  PTR_SIZE ptr;
+  std::vector<CELL_T> data;
+  POINTER_T ptr;
 
   /* Access heap */
-  PTR_SIZE& value()
+  CELL_T& value()
   {
     while(ptr >= data.size())
       data.resize(data.size() + MEM_CHUNK);

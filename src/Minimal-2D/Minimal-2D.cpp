@@ -58,7 +58,8 @@
 #define _ENABLE_EXTENSIONS 1
 
 /* Compiler Properties */
-#define PTR_SIZE unsigned char
+#define POINTER_T unsigned char
+#define CELL_T unsigned char
 #define MEM_CHUNK 64
 
 /* Project */
