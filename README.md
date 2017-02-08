@@ -50,7 +50,7 @@ The heap is created in chunks, but has a limit of whatever the highest addressab
  
 ###The Stack
 One of several language extensions, the stack is completely separate from the heap
-It is of an infinite size (limited by the architecture of the machine)
+It is of the same size as the heap, and does wrap (ie: popping nothing, or pushing beyond the size limit)
 Follows standard LIFO procedures for a stack
 
 
