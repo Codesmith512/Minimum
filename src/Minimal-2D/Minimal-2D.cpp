@@ -165,12 +165,17 @@ int main()
     /*
      * Process Character
      */
-    if(_ip.x < instructions[_ip.y].size() && isReserved(instructions[_ip.y][_ip.x]))
+    if(_ip.x < instructions[_ip.y].size())
     {
       if(!skip)
       {
         switch(instructions[_ip.y][_ip.x])
         {
+          /* NOP */
+        default:
+          iCount--;
+          break;
+
           /* Standard Commands */
         case '<':
           _heap.ptr--;
